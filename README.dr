@@ -1,0 +1,146 @@
+  A native implementation of persistent delimited continuations
+			for byte-code OCaml
+
+
+OVERVIEW:
+
+  This library implements multi-prompt delimited control operators
+for byte-code OCaml. The code implements the superset of the interface
+proposed by Dybvig, Sabry, and Peyton-Jones:
+
+   A Monadic Framework for Delimited Continuations
+   R. Kent Dybvig, Simon Peyton Jones, and Amr Sabry
+   JFP, v17, N6, pp. 687--730, 2007.
+   http://www.cs.indiana.edu/cgi-bin/techreports/TRNNN.cgi?trnum=TR615
+
+The framework supports `static' (shift/reset) and `dynamic'
+(prompt/control, shift0, control0) delimited continuation operators
+with multiple, arbitrarily typed prompts.  Please see testd0.ml and
+the benchmarks for the example of using shift/reset in OCaml programs.
+
+The implementation is native: it copies a relevant fragment of the
+OCaml interpreter stack (The stack or its fragments are never
+inspected however). The implementation is efficient: only the
+necessary prefix of the continuation is copied. The implementation is
+fully integrated with OCaml exceptions: exception handlers may be
+captured in delimited continuations (and re-instated when the
+captured continuation is installed); exceptions remove the prompts
+along the way. The implementation has no typing problems, no bizarre
+'a cont types, and no use for magic. The implementation does no
+patching to the OCaml system and is a regular (static or
+dynamically-loaded) library.
+
+
+The library has been tested for OCaml 3.08, 3.09, 3.10.2 and 3.11.1 on
+ia32 Linux and FreeBSD platforms.
+
+The library is distributed under the MIT license.
+
+
+INSTALLATION FOR UNIX (including Linux, MacOS X, and Cygwin):
+
+Unless you are on ia32 platform, you need a copy of the OCaml source
+distribution to compile this library. This is because we need some
+files that are not normally installed by an OCaml distribution. For
+the common case of ia32 platform, the present distribution includes
+suitable files, which may be sufficient. There are three sets of suitable
+files (for different versions of OCaml), arranged in the
+directories ocaml-byterun-3.09/, ocaml-byterun-3.10/, and
+ocaml-byterun-3.11/.
+
+Please examine the Makefile and adjust OCAMLINCLUDES and OCAMLBIN 
+variables if necessary. Please see the Makefile for available targets.
+
+INSTALLATION FOR MS WINDOWS:
+
+  Not tested. 
+
+
+USAGE:
+
+  ocamlc -o myprogram delimcc.cma <the .cmo files for myprogram>
+
+If you compile the top-level (see `make top'), you can use delimited
+continuation operators in interactive OCaml sessions.
+
+VERSION: April 2010
+
+
+MANIFEST
+
+
+Makefile			How to build it all
+
+
+        Implementation
+delimcc.mli			Library interface
+delimcc.ml			Library implementation
+
+stacks.c			Implementation of scAPI and serialization
+				support
+
+		A collection of C include files from the OCaml distribution 
+		needed for the compilation of stacks.c. The collections
+		below are for the ia32 platform and distributed for
+		convenience.
+		For other platforms, use OCaml distribution.
+ocaml-byterun-3.11/		for OCaml 3.11.1 and later
+ocaml-byterun-3.10/		for OCaml 3.10.2
+ocaml-byterun-3.09/		for OCaml 3.10.1 and earlier
+
+
+        Tests
+testd0.ml			Delimited control regression test suite
+tests0.ml			Continuation serialization tests
+
+
+	Memory leak tests
+memory_leak_plugged.ml		No memory leak on successive serializations
+memory_leak1.ml			No memory leak in resuming the
+				ever-running thread
+
+	Benchmarks
+bench_exc.ml			Micro-benchmark comparing delimcc's abort
+				with native OCaml exceptions
+
+bench_nondet.ml			Micro-benchmark of direct, monadic and CPS
+				implementations of non-determinism
+
+bench_coroutine.ml		The co-routine benchmark by Xavier Leroy
+				from his ocaml-callcc library: comparing
+				undelimited and delimited continuations in
+				performance and expressivity
+
+
+
+CHANGES since the July 2008 version of the library:
+  -- greatly modified and simplified implementation. It is about 10% faster, 
+     taking less memory. According to memory_leaked_plugged test,
+     the size of the stored continuation decreased from 437 bytes 
+     to 387 bytes in this version.
+
+  -- new exported function shift0, capturing a frequent pattern
+
+  -- added micro-benchmarks
+
+
+CHANGES since the April 2008 version of the library:
+  -- new primitive, push_prompt_subcont, to push a captured continuation
+     along with the control delimiter. The primitive is used to implement
+     shift without leaking memory. See the test memory_leak.ml.
+
+  -- many optimizations, which reduce the size of captured continuations
+
+
+CHANGES since the 2006 version of the library:
+  -- persistent, twice delimited continuations
+
+  -- addition of shift, control, abort, is_prompt_set
+     and various debugging facilities (of which the most notable
+     is show_val, to describe the structure of an OCaml value).
+     The operations shift and control are implemented solely in terms
+     of the basic take_subcont and push_subcont and included in the
+     library merely for convenience. On the other hand, abort -- although
+     too expressible in terms of take_subcont -- is implemented natively
+     for efficiency. Now abort is literally raise.
+
