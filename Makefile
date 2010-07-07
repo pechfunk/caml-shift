@@ -38,13 +38,20 @@
 OCAMLINCLUDES=./ocaml-byterun-3.11
 # Directory of your OCAML executables...
 #OCAMLBIN=../../bin
-OCAMLBIN=`dirname $$(which ocaml)`
+#OCAMLBIN=`dirname $$(which ocaml)`
 
-OCAMLC=$(OCAMLBIN)/ocamlc
-OCAMLTOP=$(OCAMLBIN)/ocaml
-OCAMLMKLIB=$(OCAMLBIN)/ocamlmklib
-OCAMLMKTOP=$(OCAMLBIN)/ocamlmktop
-LIBDIR=`ocamlc -where`
+#OCAMLC=$(OCAMLBIN)/ocamlc
+#OCAMLTOP=$(OCAMLBIN)/ocaml
+#OCAMLMKLIB=$(OCAMLBIN)/ocamlmklib
+#OCAMLMKTOP=$(OCAMLBIN)/ocamlmktop
+
+#If you have ocamlfind, use these
+OCAMLFIND:=ocamlfind
+OCAMLC:=$(OCAMLFIND) ocamlc
+OCAMLMKLIB:=ocamlmklib
+OCAMLMKTOP:=$(OCAMLFIND) ocamlmktop -package "caml-shift"
+LIBDIR=`$(OCAMLFIND) printconf stdlib`
+
 STDINCLUDES=$(LIBDIR)/caml
 STUBLIBDIR=$(LIBDIR)/stublibs
 CC=gcc
