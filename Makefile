@@ -74,6 +74,8 @@ install:
 	cd $(LIBDIR) && $(RANLIB) libdelimcc.a
 	cp delimcc.cma delimcc.cmi $(LIBDIR)
 
+findlib-install: delimcc.cma
+	$(OCAMLFIND) install caml-shift META delimcc.cma delimcc.cmi dlldelimcc.so 	
 
 .mli.cmi:
 	$(OCAMLC) -c $*.mli

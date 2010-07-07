@@ -51,6 +51,16 @@ ocaml-byterun-3.11/.
 Please examine the Makefile and adjust OCAMLINCLUDES and OCAMLBIN 
 variables if necessary. Please see the Makefile for available targets.
 
+The Makefile also supports the findlib system. Adjust the variable
+OCAMLFIND to point to your ocamlfind binary (if not on the path), and
+run 
+
+  make findlib-install
+
+This installation currently only supports bytecode (although adding
+native libraries to the META file is just a matter of effort).
+
+
 INSTALLATION FOR MS WINDOWS:
 
   Not tested. 
@@ -59,6 +69,8 @@ INSTALLATION FOR MS WINDOWS:
 USAGE:
 
   ocamlc -o myprogram delimcc.cma <the .cmo files for myprogram>
+
+When using findlib, add the package "caml-shift" to your requirements.
 
 If you compile the top-level (see `make top'), you can use delimited
 continuation operators in interactive OCaml sessions.
@@ -70,7 +82,7 @@ MANIFEST
 
 
 Makefile			How to build it all
-
+META                            Findlib metadata file
 
         Implementation
 delimcc.mli			Library interface

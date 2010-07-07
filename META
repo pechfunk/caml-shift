@@ -1,0 +1,4 @@
+description = "Delimited continuations"
+version = "0.201004"
+requires = ""
+archive(byte) = "delimcc.cma"
